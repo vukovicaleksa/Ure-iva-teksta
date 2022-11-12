@@ -8,6 +8,7 @@ using System.Threading;
 
 class Program
 {
+  public static int X, Y;
     public struct Objekat
     {
         public char[] a;
@@ -15,6 +16,94 @@ class Program
     public static string naziv, poslednjeCuvanje, dosadasnji_ulaz;
     public static int trenutni_red;
     public static string pomoc = "strelice - kretanje\nn$ - undo\nr$ - redo\no$ - obrisi simbol\nz$ - zameni simbol\nu$ - umetni simbol\ns$ - save\na$ - save as";
+  static void CitanjeDatoteke(string naziv)
+    {
+        if (File.Exists(naziv))
+        {
+            StreamReader citanje = new StreamReader(naziv);
+            Objekat[] niz = new Objekat[1];
+            int brojac = 0;
+            while (!citanje.EndOfStream)
+            {
+                niz[brojac].a = citanje.ReadLine().ToCharArray();
+                brojac++;
+                Array.Resize(ref niz, brojac + 1);
+            }
+            citanje.Close();
+            Console.WriteLine();
+            Console.WriteLine();
+            for (int i = 0; i < brojac; i++)
+            {
+                for (int j = 0; j < niz[i].a.Length; j++)
+                {
+                    Console.Write(niz[i].a[j]);
+                }
+                Console.WriteLine();
+            }
+            KretanjePoDatoteci(niz);
+        }
+    }
+    static void KretanjePoDatoteci(Objekat[] niz)
+    {
+        Console.SetCursorPosition(0, 0);
+        ConsoleKeyInfo strelica;
+        bool krajCitanja = false;
+        X = 0;
+        Y = 4;
+        Console.SetCursorPosition(X, Y);
+        while (!krajCitanja)
+        {
+            strelica = Console.ReadKey(true);
+            if (strelica.Key == ConsoleKey.LeftArrow)
+            {
+                if (X > 0) X--;
+                else if (X == 0)
+                {
+                    if (Y > 4) { Y--; X = niz[Y - 4].a.Length - 1; }
+                    else { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                }
+            }
+            else if (strelica.Key == ConsoleKey.RightArrow)
+            {
+                if (X < niz[Y - 4].a.Length - 1) X++;
+                else if (X == niz[Y - 4].a.Length - 1)
+                {
+                    if (Y < niz.Length + 2) { Y++; X = 0; }
+                    else { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                }
+            }
+            else if (strelica.Key == ConsoleKey.DownArrow)
+            {
+                if (X == niz[Y - 4].a.Length - 1)
+                {
+                    if (Y != niz.Length + 2) { Y++; X = niz[Y - 4].a.Length - 1; }
+                    else { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                }
+                else
+                {
+                    if (Y != niz.Length + 2 && X < niz[Y - 3].a.Length - 1) Y++;
+                    else if (Y != niz.Length + 2 && X > niz[Y - 3].a.Length - 1) { Y++; X = niz[Y - 4].a.Length - 1; }
+                    else if (Y == niz.Length + 2) { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                }
+            }
+            else if (strelica.Key == ConsoleKey.UpArrow)
+            {
+                if (X == niz[Y - 4].a.Length - 1)
+                {
+                    if (Y != 4) { Y--; X = niz[Y - 4].a.Length - 1; }
+                    else { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                }
+                else
+                {
+                    if (Y != 4 && X < niz[Y - 3].a.Length - 1) Y--;
+                    else if (Y != 4 && X > niz[Y - 3].a.Length - 1) { Y--; X = niz[Y - 4].a.Length - 1; }
+                    else if (Y == 4) { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                }
+            }
+            else krajCitanja = true;
+            Console.SetCursorPosition(X, Y);
+        }
+    }
     public static void Main(string[] args)
     {
         trenutni_red = 0;
@@ -22,7 +111,7 @@ class Program
         int izborOpcije = IzborOpcija();
         if (izborOpcije == 1)//otvori
         {
-
+            CitanjeDatoteke(naziv);
         }
         else if (izborOpcije == 2)//napravi
         {
