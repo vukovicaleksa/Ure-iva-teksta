@@ -8,24 +8,24 @@ using System.Threading;
 
 class Program
 {
-  public static int X, Y;
+    public static int X, Y;
     public struct Objekat
     {
         public char[] a;
     }
     public static string naziv, poslednjeCuvanje, dosadasnji_ulaz;
     public static int trenutni_red;
-    public static string pomoc = "strelice - kretanje\nn$ - undo\nr$ - redo\no$ - obrisi simbol\nz$ - zameni simbol\nu$ - umetni simbol\ns$ - save\na$ - save as";
-  static void CitanjeDatoteke(string naziv)
+    public static string pomoc = "strelice - kretanje\nn - undo\nr - redo\no - obrisi simbol\nz - zameni simbol\ni - umetni simbol\ns - save\na - save as";
+    static void CitanjeDatoteke(string naziv)
     {
         if (File.Exists(naziv))
         {
             StreamReader citanje = new StreamReader(naziv);
-            Objekat[] niz = new Objekat[1];
+            string[] niz = new string[1];
             int brojac = 0;
             while (!citanje.EndOfStream)
             {
-                niz[brojac].a = citanje.ReadLine().ToCharArray();
+                niz[brojac] = citanje.ReadLine();
                 brojac++;
                 Array.Resize(ref niz, brojac + 1);
             }
@@ -34,16 +34,12 @@ class Program
             Console.WriteLine();
             for (int i = 0; i < brojac; i++)
             {
-                for (int j = 0; j < niz[i].a.Length; j++)
-                {
-                    Console.Write(niz[i].a[j]);
-                }
-                Console.WriteLine();
+                Console.WriteLine(niz[i]);
             }
             KretanjePoDatoteci(niz);
         }
     }
-    static void KretanjePoDatoteci(Objekat[] niz)
+    static void KretanjePoDatoteci(string[] niz)
     {
         Console.SetCursorPosition(0, 0);
         ConsoleKeyInfo strelica;
@@ -59,46 +55,36 @@ class Program
                 if (X > 0) X--;
                 else if (X == 0)
                 {
-                    if (Y > 4) { Y--; X = niz[Y - 4].a.Length - 1; }
-                    else { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                    if (Y > 4) { Y--; X = niz[Y - 4].Length - 1; }
+                    else { X = Console.CursorLeft; Y = Console.CursorTop; }
                 }
             }
             else if (strelica.Key == ConsoleKey.RightArrow)
             {
-                if (X < niz[Y - 4].a.Length - 1) X++;
-                else if (X == niz[Y - 4].a.Length - 1)
+                if (X < niz[Y - 4].Length - 1) X++;
+                else if (X == niz[Y - 4].Length - 1)
                 {
                     if (Y < niz.Length + 2) { Y++; X = 0; }
-                    else { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                    else { X = Console.CursorLeft; Y = Console.CursorTop; }
                 }
             }
             else if (strelica.Key == ConsoleKey.DownArrow)
             {
-                if (X == niz[Y - 4].a.Length - 1)
+                if (Y < niz.Length + 2)
                 {
-                    if (Y != niz.Length + 2) { Y++; X = niz[Y - 4].a.Length - 1; }
-                    else { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                    if (X < niz[Y - 3].Length - 1) Y++;
+                    else { Y++; X = niz[Y - 4].Length - 1; }
                 }
-                else
-                {
-                    if (Y != niz.Length + 2 && X < niz[Y - 3].a.Length - 1) Y++;
-                    else if (Y != niz.Length + 2 && X > niz[Y - 3].a.Length - 1) { Y++; X = niz[Y - 4].a.Length - 1; }
-                    else if (Y == niz.Length + 2) { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
-                }
+                else continue;
             }
             else if (strelica.Key == ConsoleKey.UpArrow)
             {
-                if (X == niz[Y - 4].a.Length - 1)
+                if (Y > 4)
                 {
-                    if (Y != 4) { Y--; X = niz[Y - 4].a.Length - 1; }
-                    else { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
+                    if (X < niz[Y - 5].Length - 1) Y--;
+                    else { Y--; X = niz[Y - 4].Length - 1; }
                 }
-                else
-                {
-                    if (Y != 4 && X < niz[Y - 3].a.Length - 1) Y--;
-                    else if (Y != 4 && X > niz[Y - 3].a.Length - 1) { Y--; X = niz[Y - 4].a.Length - 1; }
-                    else if (Y == 4) { X = Console.CursorLeft - 1; Y = Console.CursorTop; }
-                }
+                else continue;
             }
             else krajCitanja = true;
             Console.SetCursorPosition(X, Y);
@@ -117,6 +103,10 @@ class Program
         {
             NoviFajl();
         }
+    }
+    static Objekat[] prebaciUObjekat(string u)
+    {
+        return new Objekat[0];
     }
     static string ogranicenUlaz(string pitanje, string[] dozvoljeno, bool obrisi)
     {
@@ -158,7 +148,7 @@ class Program
         }
     }
     static void NoviFajl()
-    { 
+    {
         StreamWriter pisanje = new StreamWriter(naziv);
         ConsoleKeyInfo keyInfo;
         dosadasnji_ulaz = "";
@@ -230,12 +220,12 @@ class Program
         }
         while (true);
     }
-    static void IzmeniInformacije()//
+    static void IzmeniInformacije()//?
     {
         Console.Clear();
         Console.Write(naziv);
         Console.Write("\n" + crteOkvir(naziv.Length));
-        Console.Write("\nCTRL+S = CUVANJE\nCTRL+Z = UNDO\nCTRL+Y = REDO\nCTRL+R = ZAMENI\n" + poslednjeCuvanje + "\n" + crteOkvir(poslednjeCuvanje.Length));
+        Console.Write("\nstrelice - kretanje\nn - undo\nr - redo\no$ - obrisi simbol\nz - zameni simbol\ni - umetni simbol\ns - save\na - save as\n" + poslednjeCuvanje + "\n" + crteOkvir(poslednjeCuvanje.Length));
         Console.Write("\n" + dosadasnji_ulaz);
     }
     static int IzborOpcija()
