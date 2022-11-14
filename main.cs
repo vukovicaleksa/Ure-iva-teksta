@@ -9,13 +9,9 @@ using System.Threading;
 class Program
 {
     public static int X, Y;
-    public struct Objekat
-    {
-        public char[] a;
-    }
     public static string naziv, poslednjeCuvanje, dosadasnji_ulaz;
     public static int trenutni_red;
-    public static string pomoc = "strelice - kretanje\nn - undo\nr - redo\no - obrisi simbol\nz - zameni simbol\ni - umetni simbol\ns - save\na - save as";
+    public static string pomoc = "strelice - kretanje\nn - undo\nr - redo\no - obrisi simbol\nz - zameni simbol\nu - umetni simbol\ns - save\na - save as";
     static void CitanjeDatoteke(string naziv)
     {
         if (File.Exists(naziv))
@@ -32,20 +28,29 @@ class Program
             citanje.Close();
             Console.WriteLine();
             Console.WriteLine();
-            for (int i = 0; i < brojac; i++)
-            {
-                Console.WriteLine(niz[i]);
-            }
-            KretanjePoDatoteci(niz);
+            IspisiText(niz);
+            // for (int i = 0; i < brojac; i++)
+            // {
+            //      Console.WriteLine(niz[i]);
+            //  }
+            KretanjePoDatoteci(niz, X, Y);
         }
     }
-    static void KretanjePoDatoteci(string[] niz)
+    static void IspisiText(string[] niz)
     {
-        Console.SetCursorPosition(0, 0);
+
+        Console.SetCursorPosition(0, 4);
+        for (int i = 0; i < niz.Length; i++)
+        {
+            Console.WriteLine(niz[i]);
+        }
+        Console.SetCursorPosition(X, Y);
+    }
+
+    static void KretanjePoDatoteci(string[] niz, int X, int Y)
+    {
         ConsoleKeyInfo strelica;
         bool krajCitanja = false;
-        X = 0;
-        Y = 4;
         Console.SetCursorPosition(X, Y);
         while (!krajCitanja)
         {
@@ -86,9 +91,21 @@ class Program
                 }
                 else continue;
             }
+            else if (strelica.Key == ConsoleKey.X)
+            {
+                Brisanje(niz);
+                Console.SetCursorPosition(0, Y);
+                Console.WriteLine(niz[Y - 4]);
+                IspisiText(niz);
+                Console.SetCursorPosition(X, Y);
+            }
             else krajCitanja = true;
             Console.SetCursorPosition(X, Y);
         }
+    }
+    public static void Brisanje(string[] niz)
+    {
+        niz[Y - 4] = niz[Y - 4].Remove(X, 1) + " ";
     }
     public static void Main(string[] args)
     {
@@ -103,10 +120,6 @@ class Program
         {
             NoviFajl();
         }
-    }
-    static Objekat[] prebaciUObjekat(string u)
-    {
-        return new Objekat[0];
     }
     static string ogranicenUlaz(string pitanje, string[] dozvoljeno, bool obrisi)
     {
@@ -225,7 +238,7 @@ class Program
         Console.Clear();
         Console.Write(naziv);
         Console.Write("\n" + crteOkvir(naziv.Length));
-        Console.Write("\nstrelice - kretanje\nn - undo\nr - redo\no$ - obrisi simbol\nz - zameni simbol\ni - umetni simbol\ns - save\na - save as\n" + poslednjeCuvanje + "\n" + crteOkvir(poslednjeCuvanje.Length));
+        Console.Write("\nstrelice - kretanje\nn - undo\nr - redo\no$ - obrisi simbol\nz - zameni simbol\nu - umetni simbol\ns - save\na - save as\n" + poslednjeCuvanje + "\n" + crteOkvir(poslednjeCuvanje.Length));
         Console.Write("\n" + dosadasnji_ulaz);
     }
     static int IzborOpcija()
