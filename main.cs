@@ -164,6 +164,7 @@ class Program
         ConsoleKeyInfo strelica;
         bool krajCitanja = false;
         bool insert = false;
+        bool menjanje = false;
         Console.SetCursorPosition(X, Y);
         while (!krajCitanja)
         {
@@ -228,16 +229,29 @@ class Program
                 IspisiText(niz);
                 Console.SetCursorPosition(X, Y);
             }
-          else if(strelica.Key == ConsoleKey.A)
+          else if(strelica.Key == ConsoleKey.Z)
           {
-            string naziv = "";
-            while(naziv.Length == 0)
-            {
-              Console.WriteLine("Kako želite da nazovete novu datoteku?");
-              naziv = Console.ReadLine();
-            }
-            SaveAs(naziv);
+            menjanje = true;
           }
+          else if (menjanje)
+          {
+            char noviSimbol = char.(strelica.Key)
+            ZameniSimbol(niz, noviSimbol);
+            Console.SetCursorPosition(0, Y);
+                Console.WriteLine(niz[Y - 2]);
+                IspisiText(niz);
+                Console.SetCursorPosition(X, Y);
+          }
+            else if(strelica.Key == ConsoleKey.A)
+            {
+              string naziv = "";
+              while(naziv.Length == 0)
+              {
+                Console.WriteLine("Kako želite da nazovete novu datoteku?");
+                naziv = Console.ReadLine();
+              }
+              SaveAs(naziv);
+            }
             else krajCitanja = true;
             Console.SetCursorPosition(X, Y);
         }
@@ -250,6 +264,10 @@ class Program
     {
         niz[Y - 2] = niz[Y - 2].Insert(X, tekst);
         X++;
+    }
+    static void ZameniSimbol(string[] niz, char simbol)
+    {
+        niz[Y - 2] = niz[Y - 2].Replace(, simbol);
     }
     static string OgranicenUlaz(string pitanje, string[] dozvoljeno, bool obrisi)
     {
