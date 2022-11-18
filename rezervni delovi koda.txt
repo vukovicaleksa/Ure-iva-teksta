@@ -1,21 +1,41 @@
-    static void Sacuvaj()
-    {
-        poslednjeCuvanje = "Poslednje cuvanje : " + DateTime.Now.ToString();
-        IzmeniInformacije();
-        StreamWriter pisanje = new StreamWriter(naziv);
-        string[] odvojenoNaRedove = dosadasnji_ulaz.Split('\n');
-        int br1 = 0;
-        foreach (string s in odvojenoNaRedove)
-        {
-            if (br1 == odvojenoNaRedove.Length - 1) pisanje.Write(s);
-            else pisanje.WriteLine(s);
-            br1++;
-        }
-        pisanje.Close();
-    }
-    static void SaveAs(string noviNaziv)
-    {
-      System.IO.File.Delete(naziv);
-      naziv = noviNaziv;
-      Sacuvaj();
-    }
+                if (trenutni_red >= 40)
+                {
+                    int l = dosadasnji_ulaz.Length;
+                    char p = dosadasnji_ulaz[l - 1];
+                    string[] reci = dosadasnji_ulaz.Split(' ');
+                    if (reci.Length < 2) //ima samo jedna rec, samo se prelazi u sledeci red
+                    {
+                        trenutni_red = 1;
+                        dosadasnji_ulaz += "\n" + keyInfo.KeyChar;
+                        ignorisi = true;
+                        IzmeniInformacije();
+                    }
+                    else
+                    {
+                        //prebaci poslednju rec u sledeci red
+                        int id_poslednje = 0;
+                        int brojac = 0;
+                        foreach (string rec in reci)
+                        {
+                            if (brojac != reci.Length - 1)
+                            {
+                                brojac++;
+                                id_poslednje += (rec.Length);
+                            }
+                        }
+                        id_poslednje += reci.Length - 1;
+                        if (p != ' ')
+                        {
+                            trenutni_red = 0;
+                            dosadasnji_ulaz = dosadasnji_ulaz.Substring(0, id_poslednje);
+                            dosadasnji_ulaz += "\n" + reci[reci.Length - 1] + keyInfo.KeyChar;
+                            IzmeniInformacije();
+                        }
+                        else
+                        {
+                            trenutni_red = 0;
+                            Console.Write("\n");
+                            dosadasnji_ulaz += "\n";
+                        }
+                    }
+                }
