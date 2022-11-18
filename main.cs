@@ -5,10 +5,11 @@ Opis:		Program treba da ima mogućnost pravljenja, čitanja i uređivanja tekstu
 using System;
 using System.IO;
 using System.Threading;
+using System.Text;
 
 class Program
 {
-    public static int X, Y;
+    public static int X = 0, Y = 3;
     public static string naziv, poslednjeCuvanje, dosadasnji_ulaz;
     public static int trenutni_red;
     public static string pomoc = "strelice - kretanje\nn - undo\nr - redo\no - obrisi simbol\nz - zameni simbol\nu - umetni simbol\ns - save\na - save as";
@@ -27,26 +28,68 @@ class Program
             }
             citanje.Close();
             Console.WriteLine();
-            Console.WriteLine();
+            PresekTeksta(ref niz);
             IspisiText(niz);
-            // for (int i = 0; i < brojac; i++)
-            // {
-            //      Console.WriteLine(niz[i]);
-            //  }
             KretanjePoDatoteci(niz, X, Y);
         }
     }
     static void IspisiText(string[] niz)
     {
-
-        Console.SetCursorPosition(0, 4);
+        Console.SetCursorPosition(0, 3);
         for (int i = 0; i < niz.Length; i++)
         {
             Console.WriteLine(niz[i]);
         }
         Console.SetCursorPosition(X, Y);
-    }
+    } 
+    static string[] PresekTeksta(ref string[] niz)
+    {
+        //Console.SetWindowSize(50, 50);
+        int i = 0;
+        Array.Resize(ref niz, niz.Length - 1);
+        while (i < niz.Length)
+        {
+            string[] red = niz[i].Split();
+            if (niz[i].Length > Console.WindowWidth && red.Length != 1)
+            {
+                if (i == niz.Length - 1)
+                {
+                    Array.Resize(ref niz, niz.Length + 1);
+                    niz[i + 1] = " ";
+                }
+                StringBuilder rec = new StringBuilder(niz[i]);
+                rec.Remove(niz[i].Length - red[red.Length - 1].Length - 1, red[red.Length - 1].Length + 1);
+                niz[i] = rec.ToString();
+                rec = new StringBuilder(niz[i + 1]);
+                if (niz[i + 1] == " ")
+                {
+                    rec.Insert(0, red[red.Length - 1]);
+                    rec.Remove(rec.Length - 1, 1);
+                }
+                else rec.Insert(0, red[red.Length - 1] + " ");
+                niz[i + 1] = rec.ToString();
+                continue;
+            }
+            if (niz[i].Length > Console.WindowWidth && red.Length == 1)
+            {
+                if (i == niz.Length - 1)
+                {
+                    Array.Resize(ref niz, niz.Length + 1);
+                    niz[i + 1] = "";
+                }
+                StringBuilder rec1 = new StringBuilder(niz[i]);
+                rec1.Remove(0, Console.WindowWidth);
+                niz[i + 1] += rec1.ToString();
 
+                rec1 = new StringBuilder(niz[i]);
+                rec1.Remove(Console.WindowWidth, niz[i].Length - Console.WindowWidth);
+                niz[i] = rec1.ToString();
+                continue;
+            }
+            i++;
+        }
+        return niz;
+    }
     static void KretanjePoDatoteci(string[] niz, int X, int Y)
     {
         ConsoleKeyInfo strelica;
@@ -60,34 +103,34 @@ class Program
                 if (X > 0) X--;
                 else if (X == 0)
                 {
-                    if (Y > 4) { Y--; X = niz[Y - 4].Length - 1; }
+                    if (Y > 3) { Y--; X = niz[Y - 3].Length - 1; }
                     else { X = Console.CursorLeft; Y = Console.CursorTop; }
                 }
             }
             else if (strelica.Key == ConsoleKey.RightArrow)
             {
-                if (X < niz[Y - 4].Length - 1) X++;
-                else if (X == niz[Y - 4].Length - 1)
+                if (X < niz[Y - 3].Length - 1) X++;
+                else if (X == niz[Y - 3].Length - 1)
                 {
-                    if (Y < niz.Length + 2) { Y++; X = 0; }
+                    if (Y < niz.Length + 1) { Y++; X = 0; }
                     else { X = Console.CursorLeft; Y = Console.CursorTop; }
                 }
             }
             else if (strelica.Key == ConsoleKey.DownArrow)
             {
-                if (Y < niz.Length + 2)
+                if (Y < niz.Length +1)
                 {
-                    if (X < niz[Y - 3].Length - 1) Y++;
-                    else { Y++; X = niz[Y - 4].Length - 1; }
+                    if (X < niz[Y - 2].Length - 1) Y++;
+                    else { Y++; X = niz[Y - 3].Length - 1; }
                 }
                 else continue;
             }
             else if (strelica.Key == ConsoleKey.UpArrow)
             {
-                if (Y > 4)
+                if (Y > 3)
                 {
-                    if (X < niz[Y - 5].Length - 1) Y--;
-                    else { Y--; X = niz[Y - 4].Length - 1; }
+                    if (X < niz[Y - 4].Length - 1) Y--;
+                    else { Y--; X = niz[Y - 3].Length - 1; }
                 }
                 else continue;
             }
@@ -95,7 +138,7 @@ class Program
             {
                 Brisanje(niz);
                 Console.SetCursorPosition(0, Y);
-                Console.WriteLine(niz[Y - 4]);
+                Console.WriteLine(niz[Y - 3]);
                 IspisiText(niz);
                 Console.SetCursorPosition(X, Y);
             }
@@ -188,8 +231,7 @@ class Program
                     int l = dosadasnji_ulaz.Length;
                     char p = dosadasnji_ulaz[l - 1];
                     string[] reci = dosadasnji_ulaz.Split(' ');
-                    Console.WriteLine(reci.Length);
-                    if (reci.Length < 2)
+                    if (reci.Length < 2) //ima samo jedna rec, samo se prelazi u sledeci red
                     {
                         trenutni_red = 1;
                         dosadasnji_ulaz += "\n" + keyInfo.KeyChar;
@@ -198,6 +240,7 @@ class Program
                     }
                     else
                     {
+                        //prebaci poslednju rec u sledeci red
                         int id_poslednje = 0;
                         int brojac = 0;
                         foreach (string rec in reci)
