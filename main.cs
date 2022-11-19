@@ -12,7 +12,7 @@ class Program
     public static int X = 0, Y = 3;
     public static string naziv, poslednjeCuvanje, dosadasnji_ulaz;
     public static int trenutni_red;
-    public static string pomoc = "strelice - kretanje\nx - obrisi simbol\nz - zameni simbol\ni - umetni simbol\ns - save\na - save as\nEsc --izađi iz funkcija\nEsc-izlazak iz programa\n";
+    public static string pomoc = "\nstrelice - kretanje\nx - obrisi simbol\nz - zameni simbol\ni - umetni simbol\ns - save\na - save as\nEsc - izađi iz funkcije\nEsc-izlazak iz programa\n";
     static int IzborOpcija()
     {
         bool provera = false;
@@ -121,43 +121,28 @@ class Program
     }
     static void IspisiText(string[] niz)
     {
-        string[] noviNiz = PresekTeksta(niz);
-        Console.SetCursorPosition(0, 3);
-        for (int i = 0; i < noviNiz.Length; i++)
+        X = 0;
+        Y = 3;
+        Console.Clear();
+        Console.WriteLine(naziv + "CrteOkvir(naziv.Length+1));
+        for (int i = 0; i < niz.Length; i++)
         {
-            Console.WriteLine(noviNiz[i]);
-        }
-        Console.SetCursorPosition(X, Y);
-    }
-    static string[] PresekTeksta(string[] niz)
-    {
-        int i = 0;
-        while (i < niz.Length)
-        {
-            string[] red = niz[i].Split();
-            if (niz[i].Length > Console.WindowWidth)
+            if (niz[i] != null)
             {
-                if (i == niz.Length - 1)
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write((i + 1) + " ");
+                Console.ForegroundColor = ConsoleColor.White;
+                X += 2;
+                for (int j = 0; j < niz[i].Length; j++)
                 {
-                    Array.Resize(ref niz, niz.Length + 1);
-                    niz[i + 1] = " ";
+                    if (X <= 80) { Console.Write(niz[i][j]); X++; }
+                    else { Y++; X = 0; Console.SetCursorPosition(X, Y); Console.Write(niz[i][j]); X++; }
                 }
-                StringBuilder rec = new StringBuilder(niz[i]);
-                rec.Remove(niz[i].Length - red[red.Length - 1].Length - 1, red[red.Length - 1].Length + 1);
-                niz[i] = rec.ToString();
-                rec = new StringBuilder(niz[i + 1]);
-                if (niz[i + 1] == " ")
-                {
-                    rec.Insert(0, red[red.Length - 1]);
-                    rec.Remove(rec.Length - 1, 1);
-                }
-                else rec.Insert(0, red[red.Length - 1] + " ");
-                niz[i + 1] = rec.ToString();
-                continue;
+                Console.WriteLine();
+                Y++;
+                X = 0;
             }
-            i++;
         }
-        return niz;
     }
     static void KretanjePoDatoteci(string[] niz, int X, int Y)
     {
@@ -229,28 +214,29 @@ class Program
                 IspisiText(niz);
                 Console.SetCursorPosition(X, Y);
             }
-          else if(strelica.Key == ConsoleKey.Z)
-          {
-            menjanje = true;
-          }
-          else if (menjanje)
-          {
-            char noviSimbol = char.(strelica.Key)
-            ZameniSimbol(niz, noviSimbol);
-            Console.SetCursorPosition(0, Y);
+            else if (strelica.Key == ConsoleKey.Z)
+            {
+                menjanje = true;
+            }
+            else if (menjanje)
+            {
+                menjanje = false;
+                ZameniSimbol(niz, strelica.Key.ToString());
+                Console.SetCursorPosition(0, Y);
                 Console.WriteLine(niz[Y - 2]);
                 IspisiText(niz);
                 Console.SetCursorPosition(X, Y);
-          }
-            else if(strelica.Key == ConsoleKey.A)
+            }
+            else if (strelica.Key == ConsoleKey.A)
             {
-              string naziv = "";
-              while(naziv.Length == 0)
-              {
-                Console.WriteLine("Kako želite da nazovete novu datoteku?");
-                naziv = Console.ReadLine();
-              }
-              SaveAs(naziv);
+                Console.Clear();
+                string naziv = "";
+                while (naziv.Length == 0)
+                {
+                    Console.WriteLine("Kako želite da nazovete novu datoteku?");
+                    naziv = Console.ReadLine();
+                }
+                SaveAs(naziv);
             }
             else krajCitanja = true;
             Console.SetCursorPosition(X, Y);
@@ -265,9 +251,9 @@ class Program
         niz[Y - 2] = niz[Y - 2].Insert(X, tekst);
         X++;
     }
-    static void ZameniSimbol(string[] niz, char simbol)
+    static void ZameniSimbol(string[] niz, string simbol)
     {
-        niz[Y - 2] = niz[Y - 2].Replace(, simbol);
+        niz[Y - 2] = niz[Y - 2].Replace(niz[Y - 2], simbol);
     }
     static string OgranicenUlaz(string pitanje, string[] dozvoljeno, bool obrisi)
     {
@@ -348,7 +334,7 @@ class Program
         Console.Write(pomoc + "Poslednji put sacuvano: " + poslednjeCuvanje + "\n" + CrteOkvir(poslednjeCuvanje.Length + 24));
         Console.Write("\n" + dosadasnji_ulaz);
     }
-      static void Sacuvaj(string naziv)
+    static void Sacuvaj(string naziv)
     {
         poslednjeCuvanje = DateTime.Now.ToString();
         IzmeniInformacije();
@@ -365,9 +351,9 @@ class Program
     }
     static void SaveAs(string noviNaziv)
     {
-      string kopija = naziv;
-      File.Replace(naziv, noviNaziv, kopija);
-      Sacuvaj(noviNaziv);
+        string kopija = naziv;
+        File.Replace(naziv, noviNaziv, kopija);
+        Sacuvaj(noviNaziv);
     }
     public static void Main(string[] args)
     {
