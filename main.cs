@@ -119,19 +119,24 @@ class Program
             KretanjePoDatoteci(niz, X, Y);
         }
     }
+    static void IspisiBojom(ConsoleColor c, string tekst, bool line)
+    {
+      Console.ForegroundColor = c;
+      if (line) Console.WriteLine(tekst);
+      else Console.Write(tekst);
+      Console.ForegroundColor = ConsoleColor.White;
+    }
     static void IspisiText(string[] niz)
     {
         X = 0;
         Y = 3;
         Console.Clear();
-        Console.WriteLine(naziv + "CrteOkvir(naziv.Length+1));
+        IspisiBojom(ConsoleColor.Yellow, naziv + "\n" + CrteOkvir(naziv.Length+1), true);
         for (int i = 0; i < niz.Length; i++)
         {
             if (niz[i] != null)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write((i + 1) + " ");
-                Console.ForegroundColor = ConsoleColor.White;
+                IspisiBojom(ConsoleColor.Blue, (i + 1) + " ", false);
                 X += 2;
                 for (int j = 0; j < niz[i].Length; j++)
                 {
