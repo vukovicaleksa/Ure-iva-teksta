@@ -34,7 +34,7 @@ class Program
             }
             if (izbor == "0")
             {
-                Console.WriteLine("POMOC\n-----");
+                IspisiBojom(ConsoleColor.Yellow, "POMOC\n-----", true);
                 Console.WriteLine(pomoc);
                 string[] odvojeno = pomoc.Split('\n');
                 Console.WriteLine(CrteOkvir(odvojeno[odvojeno.Length - 1].Length));
@@ -121,27 +121,34 @@ class Program
     }
     static void IspisiBojom(ConsoleColor c, string tekst, bool line)
     {
-      Console.ForegroundColor = c;
-      if (line) Console.WriteLine(tekst);
-      else Console.Write(tekst);
-      Console.ForegroundColor = ConsoleColor.White;
+        Console.ForegroundColor = c;
+        if (line) Console.WriteLine(tekst);
+        else Console.Write(tekst);
+        Console.ForegroundColor = ConsoleColor.White;
     }
     static void IspisiText(string[] niz)
     {
         X = 0;
-        Y = 3;
+        Y = 2;
         Console.Clear();
-        IspisiBojom(ConsoleColor.Yellow, naziv + "\n" + CrteOkvir(naziv.Length+1), true);
+        IspisiBojom(ConsoleColor.Yellow, naziv + "\n" + CrteOkvir(naziv.Length + 1), true);
+        int duzinaNajvecegBr = niz.Length.ToString().Length;
         for (int i = 0; i < niz.Length; i++)
         {
             if (niz[i] != null)
             {
-                IspisiBojom(ConsoleColor.Blue, (i + 1) + " ", false);
+                Console.SetCursorPosition(X, Y);
+                IspisiBojom(ConsoleColor.DarkBlue, (i + 1) + " ", false);
+                int duzinaBr = (i+1).ToString().Length;
                 X += 2;
+                for (int a = 0; a < duzinaNajvecegBr-duzinaBr; a++)
+                {
+                  Console.Write(' ');
+                }
                 for (int j = 0; j < niz[i].Length; j++)
                 {
                     if (X <= 80) { Console.Write(niz[i][j]); X++; }
-                    else { Y++; X = 0; Console.SetCursorPosition(X, Y); Console.Write(niz[i][j]); X++; }
+                    else { Y++; X = 0; Console.SetCursorPosition(X + 2, Y); Console.Write(niz[i][j]); X++; }
                 }
                 Console.WriteLine();
                 Y++;
@@ -242,6 +249,10 @@ class Program
                     naziv = Console.ReadLine();
                 }
                 SaveAs(naziv);
+            }
+            else if (strelica.Key == ConsoleKey.Escape)
+            {
+                krajCitanja = true;
             }
             else krajCitanja = true;
             Console.SetCursorPosition(X, Y);
@@ -363,7 +374,7 @@ class Program
     public static void Main(string[] args)
     {
         trenutni_red = 0;
-        poslednjeCuvanje = "Niste cuvali";
+        poslednjeCuvanje = "Niste sacuvali";
         int izborOpcije = IzborOpcija();
         if (izborOpcije == 1)//otvori
         {
